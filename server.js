@@ -1,8 +1,10 @@
 // server.js
 // Entry point del servicio PREDICT
+require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const mongoose = require("mongoose");
 const predictRoutes = require("./routes/predictRoutes");
 const { initModel } = require("./services/tfModelService");
 
@@ -19,6 +21,7 @@ app.use("/model", express.static(modelDir));
 app.use("/", predictRoutes);
 
 // Arranque del servidor + carga del modelo
+/*
 app.listen(PORT, async () => {
   const serverUrl = `http://localhost:${PORT}`;
   console.log(`[PREDICT] Servicio escuchando en ${serverUrl}`);
@@ -30,3 +33,14 @@ app.listen(PORT, async () => {
     process.exit(1);
   }
 });
+*/
+// conectar a Mongo
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Atlas conectado (ACQUIRE)"))
+  .catch((err) => {
+    console.error("Error Mongo:", err);
+    process.exit(1);
+  });
+app.use("/", acquireRoutes);
+app.use(express.json());
